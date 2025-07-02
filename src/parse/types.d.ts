@@ -137,4 +137,6 @@ export interface LogStatistics {
 
   durationSec: number
   altitudeChangePerKm: number
+
+  avgGlideSlopeDeg: number
 }

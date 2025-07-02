@@ -104,5 +104,13 @@ export function calculateStatistic(
     mahPerMinute: fullCapacityMah.getValue().max / (log.durationSec / 60 || 1), // avoid division by zero
     durationSec: endSec !== null && startSec !== null ? endSec - startSec : 0,
     altitudeChangePerKm,
+    avgGlideSlopeDeg:
+      distanceCalculatorFlat.getDistance().totalDistanceM > 0
+        ? Math.atan(
+            (alt.lastValue - alt.firstValue) /
+              distanceCalculatorFlat.getDistance().totalDistanceM,
+          ) *
+          (180 / Math.PI)
+        : 0,
   }
 }
