@@ -36,15 +36,15 @@ function App() {
 
   const styles = {
     container: {
-      minWidth: '300px',
+      minWidth: '680px',
       [theme.breakpoints.up('md')]: {
-        minWidth: '900px',
+        minWidth: '980px',
       },
       [theme.breakpoints.up('lg')]: {
-        minWidth: '1200px',
+        minWidth: '1280px',
       },
       [theme.breakpoints.up('xl')]: {
-        minWidth: '1536px',
+        minWidth: '1600px',
       },
     },
   }
@@ -205,7 +205,7 @@ function App() {
       )}
 
       {log && globalLogStatistic && (
-        <Container sx={styles.container}>
+        <Container maxWidth="lg" sx={styles.container}>
           <Grid container spacing={1} alignItems="center" sx={{ mb: 2 }}>
             <Typography fontSize={24}>{log.title || 'Unknown Log'}</Typography>
             <IconButton
