@@ -34,23 +34,20 @@ function App() {
     null,
   )
 
-  const styles = useMemo(
-    () => ({
-      container: {
-        minWidth: '300px',
-        [theme.breakpoints.up('md')]: {
-          minWidth: '900px',
-        },
-        [theme.breakpoints.up('lg')]: {
-          minWidth: '1200px',
-        },
-        [theme.breakpoints.up('xl')]: {
-          minWidth: '1536px',
-        },
+  const styles = {
+    container: {
+      minWidth: '300px',
+      [theme.breakpoints.up('md')]: {
+        minWidth: '900px',
       },
-    }),
-    [theme.breakpoints],
-  )
+      [theme.breakpoints.up('lg')]: {
+        minWidth: '1200px',
+      },
+      [theme.breakpoints.up('xl')]: {
+        minWidth: '1536px',
+      },
+    },
+  }
 
   useEffect(() => {
     if (!data) {
