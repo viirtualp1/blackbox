@@ -37,7 +37,7 @@ const LogChartSettings: FC = () => {
   ]
 
   return (
-    <PopupState variant="popover" popupId="demo-popup-menu">
+    <PopupState variant="popover">
       {(popupState) => (
         <Fragment>
           <FloatingSettingsBox>

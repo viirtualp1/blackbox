@@ -17,7 +17,6 @@ interface Props {
 
 const StyledBox = styled(Box)({
   position: 'relative',
-  minHeight: '322px',
 })
 
 const LogChart: FC<Props> = ({ onSelect }) => {
@@ -78,7 +77,8 @@ const LogChart: FC<Props> = ({ onSelect }) => {
     <StyledBox>
       <Line
         ref={lineRef}
-        height="65%"
+        updateMode="resize"
+        style={{ maxHeight: '350px' }}
         options={{
           responsive: true,
           plugins: {

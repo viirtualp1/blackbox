@@ -1,5 +1,5 @@
 import { type FC, useEffect, useState, type MouseEvent } from 'react'
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
+import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import {
   IconButton,
   Menu,
@@ -30,8 +30,6 @@ interface Props {
 const styles: Record<string, CSSProperties> = {
   map: {
     width: '100%',
-    height: '100%',
-    minWidth: '1200px', // Minimum width to prevent width 0
     minHeight: '500px',
     borderRadius: '4px',
   },
@@ -50,6 +48,18 @@ const StyledSettingsContainer = styled(Box)({
 const StyledContainer = styled(Box)({
   position: 'relative',
 })
+
+const ResizeMap = () => {
+  const map = useMap()
+
+  useEffect(() => {
+    setTimeout(() => {
+      map.invalidateSize()
+    }, 0)
+  }, [map])
+
+  return null
+}
 
 const Map: FC<Props> = ({ segmentDataCallback }) => {
   const { log } = useLogStore()
@@ -172,6 +182,8 @@ const Map: FC<Props> = ({ segmentDataCallback }) => {
             )}
 
             <MapLogPathRenderer getConfig={segmentDataCallback} />
+
+            <ResizeMap />
           </MapContainer>
         </StyledContainer>
       )}

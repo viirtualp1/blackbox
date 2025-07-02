@@ -5,7 +5,7 @@ import {
   useMemo,
   useState,
 } from 'react'
-import { Box, Button, Typography } from '@mui/material'
+import { Box, Button, Typography, useTheme } from '@mui/material'
 import { Container, Grid, IconButton } from '@mui/material'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import HighlightOff from '@mui/icons-material/HighlightOff'
@@ -27,10 +27,29 @@ import type { Segment } from './types/data'
 function App() {
   const [data, saveData] = useLocalStorage<string | null>('RawData2', null)
   const { setLog } = useLogStore()
+  const theme = useTheme()
 
   const [rawLog, setRawLog] = useState<Log | null>(null)
   const [selectedRange, setSelectedRange] = useState<[number, number] | null>(
     null,
+  )
+
+  const styles = useMemo(
+    () => ({
+      container: {
+        minWidth: '300px',
+        [theme.breakpoints.up('md')]: {
+          minWidth: '900px',
+        },
+        [theme.breakpoints.up('lg')]: {
+          minWidth: '1200px',
+        },
+        [theme.breakpoints.up('xl')]: {
+          minWidth: '1536px',
+        },
+      },
+    }),
+    [theme.breakpoints],
   )
 
   useEffect(() => {
@@ -189,28 +208,24 @@ function App() {
       )}
 
       {log && globalLogStatistic && (
-        <Container maxWidth="xl">
+        <Container sx={styles.container}>
           <Grid container spacing={1} alignItems="center" sx={{ mb: 2 }}>
-            <Grid>
-              <Typography fontSize={24}>
-                {log.title || 'Unknown Log'}
-              </Typography>
-            </Grid>
-            <Grid>
-              <IconButton
-                aria-label="clear"
-                color="error"
-                size="small"
-                onClick={clearData}
-              >
-                <HighlightOff />
-              </IconButton>
-            </Grid>
+            <Typography fontSize={24}>{log.title || 'Unknown Log'}</Typography>
+            <IconButton
+              aria-label="clear"
+              color="error"
+              size="small"
+              onClick={clearData}
+            >
+              <HighlightOff />
+            </IconButton>
           </Grid>
-          <Grid spacing={3}>
-            <Grid sx={{ mt: 1 }}>
-              <Grid container minHeight={500} spacing={1}>
+          <Grid width="100%" spacing={3}>
+            <Grid container sx={{ mt: 1 }} spacing={1}>
+              <Grid size={{ sm: 12, lg: 9 }}>
                 <Map segmentDataCallback={lchCb} />
+              </Grid>
+              <Grid size={{ sm: 12, lg: 3 }}>
                 <Stats stat={globalLogStatistic} />
               </Grid>
             </Grid>
