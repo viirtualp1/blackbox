@@ -1,5 +1,12 @@
-import { type FC, useEffect, useState, type MouseEvent } from 'react'
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
+import {
+  type FC,
+  useEffect,
+  useState,
+  useCallback,
+  type MouseEvent,
+  useMemo,
+} from 'react'
+import { MapContainer, Marker, Popup, TileLayer, useMap } from 'react-leaflet'
 import {
   IconButton,
   Menu,
@@ -10,31 +17,25 @@ import {
   FormControlLabel,
   Checkbox,
   styled,
+  useTheme,
 } from '@mui/material'
 import SettingsIcon from '@mui/icons-material/Settings'
 import type { CSSProperties } from '@mui/material'
 import 'leaflet-providers'
+import { interpolateHsl } from 'd3-interpolate'
+import type { Segment } from '@/types/data'
 import { type MapProvider, mapProviders } from '@/utils/providers.ts'
+import type { LogStatistics } from '@/parse/types'
 import { useLogStore } from '@/store/log.ts'
 import { useMapPositions } from '@/hooks/useMapPositions'
 import { StartIcon } from '@/components/icons/StartIcon'
 import { FinishIcon } from '@/components/icons/FinishIcon'
 import MapLogPathRenderer, {
-  type GetSegmentConfig,
+  type GetSegmentConfigOptions,
 } from '../MapPolylines/MapLogPathRenderer'
 
 interface Props {
-  segmentDataCallback: GetSegmentConfig
-}
-
-const styles: Record<string, CSSProperties> = {
-  map: {
-    width: '100%',
-    height: '100%',
-    minWidth: '1200px', // Minimum width to prevent width 0
-    minHeight: '500px',
-    borderRadius: '4px',
-  },
+  stat: LogStatistics
 }
 
 const StyledSettingsContainer = styled(Box)({
@@ -49,15 +50,59 @@ const StyledSettingsContainer = styled(Box)({
 
 const StyledContainer = styled(Box)({
   position: 'relative',
+  width: '100%',
 })
 
-const Map: FC<Props> = ({ segmentDataCallback }) => {
+const ResizeMap = () => {
+  const map = useMap()
+
+  useEffect(() => {
+    setTimeout(() => {
+      map.invalidateSize()
+    }, 0)
+  }, [map])
+
+  return null
+}
+
+const Map: FC<Props> = ({ stat }) => {
   const { log } = useLogStore()
+  const theme = useTheme()
+
   const [selectedProvider, setSelectedProvider] = useState<MapProvider>(
     mapProviders[0],
   )
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null)
+
   const open = Boolean(anchorEl)
+
+  const styles: Record<string, CSSProperties> = useMemo(() => {
+    return {
+      map: {
+        width: '100%',
+        minHeight: '500px',
+        borderRadius: '4px',
+      },
+    }
+  }, [theme.breakpoints])
+
+  const lchCb = useCallback(
+    (opts: GetSegmentConfigOptions): Segment['config'] => {
+      const avgSegmentAltitudeM =
+        opts.usedRecords.reduce((acc, record) => acc + record.altitudeM, 0) /
+        opts.usedRecords.length
+      const color = interpolateHsl(
+        'green',
+        'red',
+      )(avgSegmentAltitudeM / stat.altitude.max)
+      return {
+        opacity: 0.7,
+        color,
+        weight: 7,
+      }
+    },
+    [stat],
+  )
 
   const {
     startPosition,
@@ -171,7 +216,9 @@ const Map: FC<Props> = ({ segmentDataCallback }) => {
               </Marker>
             )}
 
-            <MapLogPathRenderer getConfig={segmentDataCallback} />
+            <MapLogPathRenderer getConfig={lchCb} />
+
+            <ResizeMap />
           </MapContainer>
         </StyledContainer>
       )}

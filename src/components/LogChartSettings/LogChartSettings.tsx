@@ -1,9 +1,16 @@
 import { type ChangeEvent, type FC, Fragment } from 'react'
 import PopupState, { bindTrigger, bindMenu } from 'material-ui-popup-state'
-import { Box, IconButton, Menu, styled } from '@mui/material'
+import {
+  Box,
+  Checkbox,
+  FormControlLabel,
+  IconButton,
+  Menu,
+  MenuItem,
+  styled,
+} from '@mui/material'
 import SettingsIcon from '@mui/icons-material/Settings'
 import { useChartSettingsStore } from '@/store/chart-settings.ts'
-import SettingItem from './SettingItem'
 
 const FloatingSettingsBox = styled(Box)({
   position: 'absolute',
@@ -27,17 +34,8 @@ const LogChartSettings: FC = () => {
     })
   }
 
-  const simpleLogFields: (keyof typeof settings)[] = [
-    'altitudeM',
-    'groundSpeedKmh',
-    'verticalSpeedMps',
-    'amperageCurrentA',
-    'transmitterLinkQuality',
-    'recieverLinkQuality',
-  ]
-
   return (
-    <PopupState variant="popover" popupId="demo-popup-menu">
+    <PopupState variant="popover" popupId="log-chart-settings">
       {(popupState) => (
         <Fragment>
           <FloatingSettingsBox>
@@ -50,14 +48,34 @@ const LogChartSettings: FC = () => {
             </IconButton>
           </FloatingSettingsBox>
           <Menu {...bindMenu(popupState)}>
-            {simpleLogFields.map((field) => (
-              <SettingItem
-                key={field}
-                name={field}
-                checked={settings[field]}
-                onChange={handleCheckboxChange}
+            <MenuItem>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={settings.altitudeM}
+                    name="altitudeM"
+                    size="small"
+                    sx={{ padding: '6px' }}
+                    onChange={handleCheckboxChange}
+                  />
+                }
+                label="Altitude"
               />
-            ))}
+            </MenuItem>
+            <MenuItem>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={settings.groundSpeedKmh}
+                    name="groundSpeedKmh"
+                    size="small"
+                    sx={{ padding: '6px' }}
+                    onChange={handleCheckboxChange}
+                  />
+                }
+                label="Ground Speed"
+              />
+            </MenuItem>
           </Menu>
         </Fragment>
       )}
