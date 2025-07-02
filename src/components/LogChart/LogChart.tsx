@@ -11,6 +11,7 @@ import { useChartSettingsStore } from '@/store/chart-settings'
 import type { LogRecord } from '@/parse/types'
 import { resampleData } from '@/parse/resampler/resampler'
 
+const GRAPH_MAX_POINTS = 1000
 interface Props {
   onSelect: (event: DraggableSelectEvent) => void
 }
@@ -37,7 +38,14 @@ const LogChart: FC<Props> = ({ onSelect }) => {
 
   const [datasets, dates, fieldColors] = useMemo(() => {
     if (!log) return []
-    const resampled = resampleData(log.records, 3)
+    const resampleRate = Math.max(
+      1,
+      Math.round(log.durationSec / GRAPH_MAX_POINTS),
+    )
+    console.info(`Log: Resampling log data (rate: ${resampleRate})`)
+
+    const resampled = resampleData(log.records, resampleRate)
+    console.info(`Log: Resampled log data to ${resampled.length} points`)
 
     const datasets = []
     const fieldColors: Record<string, string> = {}
@@ -80,6 +88,7 @@ const LogChart: FC<Props> = ({ onSelect }) => {
         ref={lineRef}
         height="65%"
         options={{
+          animation: false,
           responsive: true,
           plugins: {
             legend: {

@@ -225,6 +225,21 @@ export function resampleData(
         fraction,
       ),
       flightMode: firstRecord.flightMode,
+      capacityMah: linearInterpolate(
+        firstRecord.capacityMah,
+        secondRecord.capacityMah,
+        fraction,
+      ),
+      batteryPercent: linearInterpolate(
+        firstRecord.batteryPercent,
+        secondRecord.batteryPercent,
+        fraction,
+      ),
+      recieverBatteryVolt: linearInterpolate(
+        firstRecord.recieverBatteryVolt,
+        secondRecord.recieverBatteryVolt,
+        fraction,
+      ),
       $resample: {
         deviationSec: minDeviationSec,
         interpolated: true,

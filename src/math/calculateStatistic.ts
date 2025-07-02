@@ -21,7 +21,15 @@ export function calculateStatistic(
   const transmitterPowerCalculator = new ValueStatCalculator()
   const transmitterQualityCalculator = new ValueStatCalculator()
   const distanceCalculator = new DistanceCalculator()
+  const distanceCalculatorFlat = new DistanceCalculator()
   const rollDerivativeCalculator = new DerivativeCalculator()
+  const capacityDerivativeCalculator = new DerivativeCalculator()
+  const fullCapacityMah = new ValueStatCalculator()
+  const verticalSpeedMpsCalculator = new ValueStatCalculator()
+  const amperageCurrentA = new ValueStatCalculator()
+  let startCapacityMah: number | null = null
+  let startSec: number | null = null
+  let endSec: number | null = null
   for (let i = 0; i < log.records.length; i++) {
     const record = log.records[i]
     if (
@@ -31,6 +39,18 @@ export function calculateStatistic(
         record.flightTimeSec > options.untilSec)
     ) {
       continue
+    }
+
+    if (startSec === null || record.flightTimeSec < startSec) {
+      startSec = record.flightTimeSec
+    }
+
+    if (endSec === null || record.flightTimeSec > endSec) {
+      endSec = record.flightTimeSec
+    }
+
+    if (startCapacityMah === null) {
+      startCapacityMah = record.capacityMah
     }
 
     const prevRecord = log.records[i - 1] || null
@@ -50,13 +70,39 @@ export function calculateStatistic(
     )
     distanceCalculator.addPoint(record.coordinates, record.altitudeM)
     rollDerivativeCalculator.addValue(record.rollRad, weight)
+    fullCapacityMah.addValueWeighted(
+      record.capacityMah - startCapacityMah,
+      weight,
+    )
+    capacityDerivativeCalculator.addValue(
+      record.capacityMah - startCapacityMah,
+      weight,
+    )
+    verticalSpeedMpsCalculator.addValueWeighted(record.verticalSpeedMps, weight)
+    distanceCalculatorFlat.addPoint(record.coordinates, 0)
+    amperageCurrentA.addValueWeighted(record.amperageCurrentA, weight)
   }
+
+  const alt = altitudeCalculator.getValue()
+  const altitudeChangePerKm =
+    (alt.lastValue - alt.firstValue) /
+    (distanceCalculatorFlat.getDistance().totalDistanceM / 1000)
 
   return {
     altitude: altitudeCalculator.getValue(),
+    verticalSpeedMps: verticalSpeedMpsCalculator.getValue(),
     groundSpeedKmh: speedCalculator.getValue(),
     transmitterPowerMw: transmitterPowerCalculator.getValue(),
     transmitterLinkQuality: transmitterQualityCalculator.getValue(),
     totalDistanceM: distanceCalculator.getDistance().totalDistanceM,
+    totalDistanceFlatM: distanceCalculatorFlat.getDistance().totalDistanceM,
+    fullCapacityMah: fullCapacityMah.getValue().max,
+    amperageCurrentA: amperageCurrentA.getValue(),
+    mahPerKm:
+      fullCapacityMah.getValue().max /
+      (distanceCalculator.getDistance().totalDistanceM / 1000),
+    mahPerMinute: fullCapacityMah.getValue().max / (log.durationSec / 60 || 1), // avoid division by zero
+    durationSec: endSec !== null && startSec !== null ? endSec - startSec : 0,
+    altitudeChangePerKm,
   }
 }
