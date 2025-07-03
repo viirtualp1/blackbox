@@ -188,7 +188,7 @@ function App() {
       )}
 
       {log && globalLogStatistic && (
-        <Box sx={{ margin: '0 48px' }}>
+        <Box sx={{ margin: '0 24px' }}>
           <Grid container spacing={1} alignItems="center" sx={{ mb: 2 }}>
             <Typography fontSize={24}>{log.title || 'Unknown Log'}</Typography>
             <IconButton
@@ -201,11 +201,11 @@ function App() {
             </IconButton>
           </Grid>
           <Grid width="100%" spacing={3}>
-            <Grid container sx={{ mt: 1 }} spacing={1}>
-              <Grid size={{ sm: 12, lg: 9, xl: 10 }}>
+            <Grid container sx={{ mt: 1 }} spacing={2}>
+              <Grid size={{ sm: 12, lg: 9 }}>
                 <Map segmentDataCallback={lchCb} />
               </Grid>
-              <Grid size={{ sm: 12, lg: 3, xl: 2 }}>
+              <Grid size={{ sm: 12, lg: 3 }}>
                 <Stats stat={selectedRangeStatistic || globalLogStatistic} />
               </Grid>
             </Grid>

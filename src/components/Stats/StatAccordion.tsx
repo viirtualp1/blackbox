@@ -17,7 +17,7 @@ const StatAccordion: FC<Props> = ({ section }) => {
   const { title, icon: Icon, data, type } = section
 
   return (
-    <Accordion>
+    <Accordion color="dark" disableGutters>
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Icon sx={{ mr: 1 }} />
         <Typography>{title}</Typography>

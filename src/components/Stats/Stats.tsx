@@ -1,5 +1,4 @@
 import { type FC } from 'react'
-import { Typography } from '@mui/material'
 import type { LogStatistics } from '@/parse/types'
 import StatAccordion from './StatAccordion'
 import { useStatSections } from './useStatSections'
@@ -13,10 +12,6 @@ const Stats: FC<Props> = ({ stat }) => {
 
   return (
     <div>
-      <Typography variant="h6" gutterBottom>
-        Flight Statistics
-      </Typography>
-
       {sections.map((section) => (
         <StatAccordion key={section.title} section={section} />
       ))}
