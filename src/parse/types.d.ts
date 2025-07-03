@@ -1,3 +1,5 @@
+import { ValueStat } from '@/math/ValueStatCalculator'
+
 export interface RadiomasterLogRecord {
   Date: string // YYYY-MM-DD
   Time: string // HH:mm:ss.SSS
@@ -23,7 +25,7 @@ export interface RadiomasterLogRecord {
   'Ptch(rad)': number
   'Roll(rad)': number
   'Yaw(rad)': number
-  FM: string // статус, например "OK"
+  FM: string
   'VSpd(m/s)': number
   Rud: number
   Ele: number
@@ -39,7 +41,7 @@ export interface RadiomasterLogRecord {
   SF: number
   SG: number
   SH: number
-  LSW: string // например "0x0000000000000000"
+  LSW: string
   'CH1(us)': number
   'CH2(us)': number
   'CH3(us)': number
@@ -84,8 +86,8 @@ export interface Log {
 }
 
 export interface LogStats {
-  altitude: ValueData
-  groundSpeedKmh: ValueData
+  altitude: ValueStat
+  groundSpeedKmh: ValueStat
 }
 
 export interface LogRecord {
@@ -106,6 +108,9 @@ export interface LogRecord {
   recieverSSIdB: number
   transmitterSSIdB: number
   flightMode: string
+  capacityMah: number
+  batteryPercent: number
+  recieverBatteryVolt: number
 
   $resample?: {
     deviationSec?: number // deviation from the original record in seconds
@@ -117,9 +122,21 @@ export interface LogRecord {
 }
 
 export interface LogStatistics {
-  altitude: ValueData
-  groundSpeedKmh: ValueData
-  transmitterPowerMw: ValueData
-  transmitterLinkQuality: ValueData
+  altitude: ValueStat
+  verticalSpeedMps: ValueStat
+  groundSpeedKmh: ValueStat
+  transmitterPowerMw: ValueStat
+  transmitterLinkQuality: ValueStat
+  amperageCurrentA: ValueStat
+
   totalDistanceM: number
+  totalDistanceFlatM: number
+  fullCapacityMah: number
+  mahPerKm: number
+  mahPerMinute: number
+
+  durationSec: number
+  altitudeChangePerKm: number
+
+  avgGlideSlopeDeg: number
 }

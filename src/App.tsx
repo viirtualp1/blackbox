@@ -82,7 +82,7 @@ function App() {
     return stats
   }, [rawLog])
 
-  useMemo<LogStatistics | null>(() => {
+  const selectedRangeStatistic = useMemo<LogStatistics | null>(() => {
     if (!rawLog || !selectedRange) {
       return null
     }
@@ -206,7 +206,7 @@ function App() {
                 <Map segmentDataCallback={lchCb} />
               </Grid>
               <Grid size={{ sm: 12, lg: 3, xl: 2 }}>
-                <Stats stat={globalLogStatistic} />
+                <Stats stat={selectedRangeStatistic || globalLogStatistic} />
               </Grid>
             </Grid>
             <Grid sx={{ mt: 3 }}>
