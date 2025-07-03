@@ -15,7 +15,7 @@ import { useLocalStorage } from '@uidotdev/usehooks'
 import type { Segment } from './types/data'
 import type { GetSegmentConfigOptions } from './components/MapPolylines/MapLogPathRenderer'
 import { useLogStore } from '@/store/log.ts'
-import type { DraggableSelectEvent } from '@/utils/chart'
+import type { DraggableSelectEvent } from '@/types/draggable-chart.ts'
 import { calculateStatistic } from './math/calculateStatistic'
 import { resampleData } from './parse/resampler/resampler'
 import { parseEdgeTxLogs } from './parse/edgetx/parseEdgeTxLog'
@@ -25,6 +25,16 @@ import Map from '@/components/Map/Map.tsx'
 import LogChart from '@/components/LogChart/LogChart.tsx'
 import Stats from '@/components/Stats/Stats.tsx'
 import AppThemeSelect from '@/components/AppThemeSelect/AppThemeSelect.tsx'
+
+const styles = {
+  initialContainer: {
+    height: '100%',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+}
 
 function App() {
   const [data, saveData] = useLocalStorage<string | null>('RawData2', null)
@@ -128,6 +138,13 @@ function App() {
     saveData(text)
   }
 
+  const initExampleFile = async () => {
+    const csvText = await import(`/public/example.csv?raw`).then(
+      (m) => m.default,
+    )
+    saveData(csvText)
+  }
+
   const clearData = () => {
     saveData(null)
   }
@@ -178,7 +195,7 @@ function App() {
       <AppThemeSelect />
 
       {!log && (
-        <Box>
+        <Box sx={styles.initialContainer}>
           <h1>Blackbox</h1>
 
           <Button
@@ -196,11 +213,14 @@ function App() {
               accept=".csv"
             />
           </Button>
+          <Button sx={{ marginTop: 1 }} size="small" onClick={initExampleFile}>
+            Use example file
+          </Button>
         </Box>
       )}
 
       {log && globalLogStatistic && (
-        <Box sx={{ margin: '0 24px' }}>
+        <Box sx={{ margin: '24px' }}>
           <Grid container spacing={1} alignItems="center" sx={{ mb: 2 }}>
             <Typography fontSize={24}>{log.title || 'Unknown Log'}</Typography>
             <IconButton
