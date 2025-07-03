@@ -7,8 +7,8 @@ import SettingItem from './SettingItem'
 
 const FloatingSettingsBox = styled(Box)({
   position: 'absolute',
-  top: 10,
-  right: 10,
+  top: 0,
+  right: -10,
   zIndex: 1000,
 })
 
