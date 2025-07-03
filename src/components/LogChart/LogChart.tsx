@@ -1,6 +1,6 @@
 import { type FC, useMemo, useRef } from 'react'
 import { Line } from 'react-chartjs-2'
-import { Box, styled } from '@mui/material'
+import { Box, styled, useTheme } from '@mui/material'
 import { useLogStore } from '@/store/log.ts'
 import {
   type DraggableSelectEvent,
@@ -25,6 +25,7 @@ const StyledBox = styled(Box)({
 const LogChart: FC<Props> = ({ onSelect }) => {
   const { log } = useLogStore()
   const { mode } = useColorScheme()
+  const theme = useTheme()
 
   const lineRef = useRef<any>(null)
   const { settings } = useChartSettingsStore()
@@ -131,6 +132,7 @@ const LogChart: FC<Props> = ({ onSelect }) => {
                       color: fieldColors?.[field] || '#000000',
                     },
                     grid: {
+                      color: theme.palette.divider,
                       drawOnChartArea: index === 0,
                     },
                   },
