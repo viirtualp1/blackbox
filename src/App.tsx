@@ -6,7 +6,9 @@ import {
   useState,
 } from 'react'
 import { interpolateHsl } from 'd3-interpolate'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
 import { Box, Button, Typography, Grid, IconButton } from '@mui/material'
+import CssBaseline from '@mui/material/CssBaseline'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import HighlightOff from '@mui/icons-material/HighlightOff'
 import { useLocalStorage } from '@uidotdev/usehooks'
@@ -22,6 +24,7 @@ import VisuallyHiddenInput from '@/components/ui/VisuallyHiddenInput.tsx'
 import Map from '@/components/Map/Map.tsx'
 import LogChart from '@/components/LogChart/LogChart.tsx'
 import Stats from '@/components/Stats/Stats.tsx'
+import AppThemeSelect from '@/components/AppThemeSelect/AppThemeSelect.tsx'
 
 function App() {
   const [data, saveData] = useLocalStorage<string | null>('RawData2', null)
@@ -31,6 +34,12 @@ function App() {
   const [selectedRange, setSelectedRange] = useState<[number, number] | null>(
     null,
   )
+
+  const darkTheme = createTheme({
+    colorSchemes: {
+      dark: true,
+    },
+  })
 
   useEffect(() => {
     if (!data) {
@@ -164,7 +173,10 @@ function App() {
   )
 
   return (
-    <>
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
+      <AppThemeSelect />
+
       {!log && (
         <Box>
           <h1>Blackbox</h1>
@@ -215,7 +227,7 @@ function App() {
           </Grid>
         </Box>
       )}
-    </>
+    </ThemeProvider>
   )
 }
 

@@ -10,9 +10,6 @@ const FloatingSettingsBox = styled(Box)({
   top: 10,
   right: 10,
   zIndex: 1000,
-  backgroundColor: 'white',
-  borderRadius: '4px',
-  boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
 })
 
 const LogChartSettings: FC = () => {

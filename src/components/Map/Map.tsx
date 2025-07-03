@@ -95,7 +95,7 @@ const Map: FC<Props> = ({ segmentDataCallback }) => {
             <IconButton
               onClick={handleSettingsClick}
               size="small"
-              sx={{ margin: 1 }}
+              sx={{ margin: 1, color: 'grey' }}
             >
               <SettingsIcon />
             </IconButton>
