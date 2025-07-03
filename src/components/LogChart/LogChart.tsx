@@ -1,22 +1,20 @@
 import { type FC, useMemo, useRef } from 'react'
 import { Line } from 'react-chartjs-2'
 import { Box, styled, useTheme } from '@mui/material'
+import { useColorScheme } from '@mui/material/styles'
 import { useLogStore } from '@/store/log.ts'
-import {
-  type DraggableSelectEvent,
-  getDraggableSelectRangeConfig,
-} from '@/utils/chart'
-import LogChartSettings from '@/components/LogChartSettings/LogChartSettings.tsx'
 import { useChartSettingsStore } from '@/store/chart-settings'
 import type { LogRecord } from '@/parse/types'
 import { darken, lighten } from '@/utils/color'
 import { resampleData } from '@/parse/resampler/resampler'
-import { useColorScheme } from '@mui/material/styles'
+import type { DraggableSelectEvent } from '@/types/draggable-chart.ts'
+import LogChartSettings from '@/components/LogChartSettings/LogChartSettings.tsx'
 
-const GRAPH_MAX_POINTS = 1000
 interface Props {
   onSelect: (event: DraggableSelectEvent) => void
 }
+
+const GRAPH_MAX_POINTS = 1000
 
 const StyledBox = styled(Box)({
   position: 'relative',
@@ -92,6 +90,24 @@ const LogChart: FC<Props> = ({ onSelect }) => {
     return [datasets, dates, fieldColors]
   }, [log, settings])
 
+  const draggableSelectRangeConfig = useMemo(() => {
+    return {
+      enable: true,
+      unselectColor: 'rgba(255,255,255,0.65)',
+      borderColor: '#2388FF',
+      borderWidth: 2,
+      text: {
+        enable: true,
+        color: theme.palette.text.primary,
+        font: {
+          family: 'Roboto, sans-serif',
+          size: 14,
+        },
+      },
+      onSelect,
+    }
+  }, [onSelect, theme.palette.text.primary])
+
   return (
     <StyledBox>
       <Line
@@ -106,9 +122,7 @@ const LogChart: FC<Props> = ({ onSelect }) => {
               display: false,
             },
             // @ts-ignore
-            draggableSelectRange: getDraggableSelectRangeConfig({
-              onSelect,
-            }),
+            draggableSelectRange: draggableSelectRangeConfig,
           },
           scales: {
             x: {
