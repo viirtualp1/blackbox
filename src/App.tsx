@@ -5,13 +5,16 @@ import {
   useMemo,
   useState,
 } from 'react'
-import { Box, Button, Typography, useTheme } from '@mui/material'
-import { Container, Grid, IconButton } from '@mui/material'
+import { interpolateHsl } from 'd3-interpolate'
+import { Box, Button, Typography, Grid, IconButton } from '@mui/material'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import HighlightOff from '@mui/icons-material/HighlightOff'
 import { useLocalStorage } from '@uidotdev/usehooks'
+import type { Segment } from './types/data'
+import type { GetSegmentConfigOptions } from './components/MapPolylines/MapLogPathRenderer'
 import { useLogStore } from '@/store/log.ts'
 import type { DraggableSelectEvent } from '@/utils/chart'
+import { calculateStatistic } from './math/calculateStatistic'
 import { resampleData } from './parse/resampler/resampler'
 import { parseEdgeTxLogs } from './parse/edgetx/parseEdgeTxLog'
 import type { Log, LogRecord, LogStatistics } from './parse/types'
@@ -19,35 +22,15 @@ import VisuallyHiddenInput from '@/components/ui/VisuallyHiddenInput.tsx'
 import Map from '@/components/Map/Map.tsx'
 import LogChart from '@/components/LogChart/LogChart.tsx'
 import Stats from '@/components/Stats/Stats.tsx'
-import { calculateStatistic } from './math/calculateStatistic'
-import { interpolateHsl } from 'd3-interpolate'
-import type { GetSegmentConfigOptions } from './components/MapPolylines/MapLogPathRenderer'
-import type { Segment } from './types/data'
 
 function App() {
   const [data, saveData] = useLocalStorage<string | null>('RawData2', null)
   const { setLog } = useLogStore()
-  const theme = useTheme()
 
   const [rawLog, setRawLog] = useState<Log | null>(null)
   const [selectedRange, setSelectedRange] = useState<[number, number] | null>(
     null,
   )
-
-  const styles = {
-    container: {
-      minWidth: '680px',
-      [theme.breakpoints.up('md')]: {
-        minWidth: '980px',
-      },
-      [theme.breakpoints.up('lg')]: {
-        minWidth: '1280px',
-      },
-      [theme.breakpoints.up('xl')]: {
-        minWidth: '1600px',
-      },
-    },
-  }
 
   useEffect(() => {
     if (!data) {
@@ -205,7 +188,7 @@ function App() {
       )}
 
       {log && globalLogStatistic && (
-        <Container maxWidth="lg" sx={styles.container}>
+        <Box sx={{ margin: '0 48px' }}>
           <Grid container spacing={1} alignItems="center" sx={{ mb: 2 }}>
             <Typography fontSize={24}>{log.title || 'Unknown Log'}</Typography>
             <IconButton
@@ -219,10 +202,10 @@ function App() {
           </Grid>
           <Grid width="100%" spacing={3}>
             <Grid container sx={{ mt: 1 }} spacing={1}>
-              <Grid size={{ sm: 12, lg: 9 }}>
+              <Grid size={{ sm: 12, lg: 9, xl: 10 }}>
                 <Map segmentDataCallback={lchCb} />
               </Grid>
-              <Grid size={{ sm: 12, lg: 3 }}>
+              <Grid size={{ sm: 12, lg: 3, xl: 2 }}>
                 <Stats stat={globalLogStatistic} />
               </Grid>
             </Grid>
@@ -230,7 +213,7 @@ function App() {
               <LogChart onSelect={onRangeSelect} />
             </Grid>
           </Grid>
-        </Container>
+        </Box>
       )}
     </>
   )
