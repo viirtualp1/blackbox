@@ -7,12 +7,9 @@ import SettingItem from './SettingItem'
 
 const FloatingSettingsBox = styled(Box)({
   position: 'absolute',
-  top: 10,
-  right: 10,
+  top: 0,
+  right: -10,
   zIndex: 1000,
-  backgroundColor: 'white',
-  borderRadius: '4px',
-  boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
 })
 
 const LogChartSettings: FC = () => {
@@ -37,7 +34,7 @@ const LogChartSettings: FC = () => {
   ]
 
   return (
-    <PopupState variant="popover" popupId="demo-popup-menu">
+    <PopupState variant="popover">
       {(popupState) => (
         <Fragment>
           <FloatingSettingsBox>

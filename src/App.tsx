@@ -5,13 +5,18 @@ import {
   useMemo,
   useState,
 } from 'react'
-import { Box, Button, Typography } from '@mui/material'
-import { Container, Grid, IconButton } from '@mui/material'
+import { interpolateHsl } from 'd3-interpolate'
+import { ThemeProvider, createTheme } from '@mui/material/styles'
+import { Box, Button, Typography, Grid, IconButton } from '@mui/material'
+import CssBaseline from '@mui/material/CssBaseline'
 import CloudUploadIcon from '@mui/icons-material/CloudUpload'
 import HighlightOff from '@mui/icons-material/HighlightOff'
 import { useLocalStorage } from '@uidotdev/usehooks'
+import type { Segment } from './types/data'
+import type { GetSegmentConfigOptions } from './components/MapPolylines/MapLogPathRenderer'
 import { useLogStore } from '@/store/log.ts'
 import type { DraggableSelectEvent } from '@/utils/chart'
+import { calculateStatistic } from './math/calculateStatistic'
 import { resampleData } from './parse/resampler/resampler'
 import { parseEdgeTxLogs } from './parse/edgetx/parseEdgeTxLog'
 import type { Log, LogRecord, LogStatistics } from './parse/types'
@@ -19,10 +24,7 @@ import VisuallyHiddenInput from '@/components/ui/VisuallyHiddenInput.tsx'
 import Map from '@/components/Map/Map.tsx'
 import LogChart from '@/components/LogChart/LogChart.tsx'
 import Stats from '@/components/Stats/Stats.tsx'
-import { calculateStatistic } from './math/calculateStatistic'
-import { interpolateHsl } from 'd3-interpolate'
-import type { GetSegmentConfigOptions } from './components/MapPolylines/MapLogPathRenderer'
-import type { Segment } from './types/data'
+import AppThemeSelect from '@/components/AppThemeSelect/AppThemeSelect.tsx'
 
 function App() {
   const [data, saveData] = useLocalStorage<string | null>('RawData2', null)
@@ -32,6 +34,12 @@ function App() {
   const [selectedRange, setSelectedRange] = useState<[number, number] | null>(
     null,
   )
+
+  const darkTheme = createTheme({
+    colorSchemes: {
+      dark: true,
+    },
+  })
 
   useEffect(() => {
     if (!data) {
@@ -165,7 +173,10 @@ function App() {
   )
 
   return (
-    <>
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
+      <AppThemeSelect />
+
       {!log && (
         <Box>
           <h1>Blackbox</h1>
@@ -189,28 +200,24 @@ function App() {
       )}
 
       {log && globalLogStatistic && (
-        <Container maxWidth="xl">
+        <Box sx={{ margin: '0 24px' }}>
           <Grid container spacing={1} alignItems="center" sx={{ mb: 2 }}>
-            <Grid>
-              <Typography fontSize={24}>
-                {log.title || 'Unknown Log'}
-              </Typography>
-            </Grid>
-            <Grid>
-              <IconButton
-                aria-label="clear"
-                color="error"
-                size="small"
-                onClick={clearData}
-              >
-                <HighlightOff />
-              </IconButton>
-            </Grid>
+            <Typography fontSize={24}>{log.title || 'Unknown Log'}</Typography>
+            <IconButton
+              aria-label="clear"
+              color="error"
+              size="small"
+              onClick={clearData}
+            >
+              <HighlightOff />
+            </IconButton>
           </Grid>
-          <Grid spacing={3}>
-            <Grid sx={{ mt: 1 }}>
-              <Grid container minHeight={500} spacing={1}>
+          <Grid width="100%" spacing={3}>
+            <Grid container sx={{ mt: 1 }} spacing={2}>
+              <Grid size={{ sm: 12, lg: 9 }}>
                 <Map segmentDataCallback={lchCb} />
+              </Grid>
+              <Grid size={{ sm: 12, lg: 3 }}>
                 <Stats stat={selectedRangeStatistic || globalLogStatistic} />
               </Grid>
             </Grid>
@@ -218,9 +225,9 @@ function App() {
               <LogChart onSelect={onRangeSelect} />
             </Grid>
           </Grid>
-        </Container>
+        </Box>
       )}
-    </>
+    </ThemeProvider>
   )
 }
 

@@ -30,8 +30,6 @@ interface Props {
 const styles: Record<string, CSSProperties> = {
   map: {
     width: '100%',
-    height: '100%',
-    minWidth: '1200px', // Minimum width to prevent width 0
     minHeight: '500px',
     borderRadius: '4px',
   },
@@ -97,7 +95,7 @@ const Map: FC<Props> = ({ segmentDataCallback }) => {
             <IconButton
               onClick={handleSettingsClick}
               size="small"
-              sx={{ margin: 1 }}
+              sx={{ margin: 1, color: 'grey' }}
             >
               <SettingsIcon />
             </IconButton>
