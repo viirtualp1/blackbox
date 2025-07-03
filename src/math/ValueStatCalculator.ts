@@ -5,6 +5,8 @@ export interface ValueStat {
   q95: number // 95th percentile
   q99: number // 99th percentile
   uniqueValues: number[] // Optional, only if you need to track unique values
+  firstValue: number
+  lastValue: number
 }
 
 export class ValueStatCalculator {
@@ -22,6 +24,8 @@ export class ValueStatCalculator {
       q95: NaN,
       q99: NaN,
       uniqueValues: [],
+      firstValue: NaN,
+      lastValue: NaN,
     }
   }
 
@@ -76,6 +80,8 @@ export class ValueStatCalculator {
       ...this.value,
       ...this.calculatePercentiles(),
       uniqueValues: Array.from(this.uniqueValuesSet).sort((a, b) => a - b),
+      firstValue: this.allValues[0] ?? NaN,
+      lastValue: this.allValues[this.allValues.length - 1] ?? NaN,
     }
   }
 }

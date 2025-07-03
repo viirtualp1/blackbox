@@ -49,6 +49,9 @@ export async function parseEdgeTxLogs(text: string): Promise<Log> {
       ),
       transmitterSSIdB: safeParseNumber(record['TRSS(dB)']),
       flightMode: record.FM,
+      batteryPercent: safeParseNumber(record['Bat%(%)']),
+      recieverBatteryVolt: safeParseNumber(record['RxBt(V)']),
+      capacityMah: safeParseNumber(record['Capa(mAh)']),
     }
 
     return data
