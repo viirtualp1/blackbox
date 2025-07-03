@@ -1,4 +1,4 @@
-import type { FC } from 'react'
+import type { FC, MouseEvent } from 'react'
 import { Box, ToggleButtonGroup, ToggleButton } from '@mui/material'
 import { useColorScheme } from '@mui/material/styles'
 import DarkModeIcon from '@mui/icons-material/DarkMode'
@@ -16,7 +16,7 @@ const styles = {
 const AppThemeSelect: FC = () => {
   const { mode, setMode } = useColorScheme()
 
-  const setTheme = (_: Event, newTheme: string) => {
+  const setTheme = (_: MouseEvent<HTMLElement>, newTheme: string) => {
     setMode(newTheme as 'system' | 'light' | 'dark')
   }
 
