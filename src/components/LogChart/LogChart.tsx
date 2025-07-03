@@ -9,7 +9,9 @@ import {
 import LogChartSettings from '@/components/LogChartSettings/LogChartSettings.tsx'
 import { useChartSettingsStore } from '@/store/chart-settings'
 import type { LogRecord } from '@/parse/types'
+import { darken, lighten } from '@/utils/color'
 import { resampleData } from '@/parse/resampler/resampler'
+import { useColorScheme } from '@mui/material/styles'
 
 const GRAPH_MAX_POINTS = 1000
 interface Props {
@@ -22,6 +24,7 @@ const StyledBox = styled(Box)({
 
 const LogChart: FC<Props> = ({ onSelect }) => {
   const { log } = useLogStore()
+  const { mode } = useColorScheme()
 
   const lineRef = useRef<any>(null)
   const { settings } = useChartSettingsStore()
@@ -63,6 +66,9 @@ const LogChart: FC<Props> = ({ onSelect }) => {
       if (!settings[field]) continue
 
       const color = availableColors.pop()!
+      const fillColor =
+        mode === 'dark' ? lighten(color, 50, 0.1) : darken(color, 1, 0.1)
+
       fieldColors[field] = color
 
       const data = resampled.map((record) => Number(record[field]))
@@ -72,7 +78,11 @@ const LogChart: FC<Props> = ({ onSelect }) => {
         pointRadius: 1,
         pointHoverRadius: 5,
         borderColor: color,
-        fill: true,
+        fill: {
+          target: 'origin',
+          above: fillColor,
+          below: fillColor,
+        },
         yAxisID: field,
       })
     }
@@ -86,7 +96,7 @@ const LogChart: FC<Props> = ({ onSelect }) => {
       <Line
         ref={lineRef}
         updateMode="resize"
-        style={{ maxHeight: '350px' }}
+        style={{ maxHeight: '300px' }}
         options={{
           animation: false,
           responsive: true,
