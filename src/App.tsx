@@ -232,7 +232,7 @@ function App() {
               <HighlightOff />
             </IconButton>
           </Grid>
-          <Grid width="100%" spacing={3}>
+          <Grid width="100%" spacing={5}>
             <Grid container sx={{ mt: 1 }} spacing={2}>
               <Grid size={{ sm: 12, lg: 9 }}>
                 <Map segmentDataCallback={lchCb} />

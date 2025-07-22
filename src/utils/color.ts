@@ -17,7 +17,7 @@ export function darken(color: string, percent = 20, alpha = 0.25): string {
 
 /**
  * Увеличивает яркость hex-цвета на `percent` % и добавляет alpha-канал.
- * @param color      Цвет в формате rrggbb
+ * @param color    Цвет в формате rrggbb
  * @param percent  Насколько осветлить (0-100), 20 % ≈ «чуть светлее»
  * @param alpha    Прозрачность 0-1, по умолчанию 0.25
  * @returns        Строка вида 'rgba(r,g,b,a)'
