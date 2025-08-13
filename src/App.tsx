@@ -44,6 +44,9 @@ function App() {
   const [selectedRange, setSelectedRange] = useState<[number, number] | null>(
     null,
   )
+  const [hoveredPoint, setHoveredPoint] = useState<{ second: number } | null>(
+    null,
+  )
 
   const darkTheme = createTheme({
     colorSchemes: {
@@ -86,7 +89,7 @@ function App() {
     setLog(logData)
 
     return logData
-  }, [rawLog])
+  }, [rawLog, setLog])
 
   const globalLogStatistic = useMemo<LogStatistics | null>(() => {
     if (!rawLog) {
@@ -235,14 +238,17 @@ function App() {
           <Grid width="100%" spacing={5}>
             <Grid container sx={{ mt: 1 }} spacing={2}>
               <Grid size={{ sm: 12, lg: 9 }}>
-                <Map segmentDataCallback={lchCb} />
+                <Map segmentDataCallback={lchCb} hoveredPoint={hoveredPoint} />
               </Grid>
               <Grid size={{ sm: 12, lg: 3 }}>
                 <Stats stat={selectedRangeStatistic || globalLogStatistic} />
               </Grid>
             </Grid>
             <Grid sx={{ mt: 3 }}>
-              <LogChart onSelect={onRangeSelect} />
+              <LogChart
+                onSelect={onRangeSelect}
+                onPointHover={setHoveredPoint}
+              />
             </Grid>
           </Grid>
         </Box>

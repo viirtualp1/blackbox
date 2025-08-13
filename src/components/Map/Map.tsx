@@ -1,5 +1,11 @@
 import { type FC, useEffect, useState, type MouseEvent } from 'react'
-import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet'
+import {
+  MapContainer,
+  Marker,
+  Popup,
+  TileLayer,
+  CircleMarker,
+} from 'react-leaflet'
 import {
   IconButton,
   Menu,
@@ -25,6 +31,7 @@ import MapLogPathRenderer, {
 
 interface Props {
   segmentDataCallback: GetSegmentConfig
+  hoveredPoint?: { second: number } | null
 }
 
 const styles: Record<string, CSSProperties> = {
@@ -49,13 +56,16 @@ const StyledContainer = styled(Box)({
   position: 'relative',
 })
 
-const Map: FC<Props> = ({ segmentDataCallback }) => {
+const Map: FC<Props> = ({ segmentDataCallback, hoveredPoint }) => {
   const { log } = useLogStore()
   const [selectedProvider, setSelectedProvider] = useState<MapProvider>(
     mapProviders[0],
   )
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
+  const [hoveredPosition, setHoveredPosition] = useState<
+    [number, number] | null
+  >(null)
 
   const {
     startPosition,
@@ -72,7 +82,26 @@ const Map: FC<Props> = ({ segmentDataCallback }) => {
     initPath()
     initStartPosition()
     initFinishPosition()
-  }, [log])
+  }, [log, initCenterPosition, initPath, initStartPosition, initFinishPosition])
+
+  // Update hovered position when hoveredPoint changes
+  useEffect(() => {
+    if (!hoveredPoint || !log) {
+      setHoveredPosition(null)
+      return
+    }
+
+    // Find the closest record to the hovered second
+    const record = log.records.find(
+      (record) => Math.abs(record.flightTimeSec - hoveredPoint.second) < 0.1,
+    )
+
+    if (record && record.coordinates) {
+      setHoveredPosition([record.coordinates.lat, record.coordinates.lng])
+    } else {
+      setHoveredPosition(null)
+    }
+  }, [hoveredPoint, log])
 
   const handleSettingsClick = (event: MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget)
@@ -170,6 +199,22 @@ const Map: FC<Props> = ({ segmentDataCallback }) => {
             )}
 
             <MapLogPathRenderer getConfig={segmentDataCallback} />
+
+            {hoveredPosition && (
+              <CircleMarker
+                center={hoveredPosition as [number, number]}
+                radius={8}
+                pathOptions={{
+                  fillColor: '#ffffffff',
+                  fillOpacity: 0.9,
+                  weight: 2,
+                  color: '#000',
+                  opacity: 1,
+                }}
+              >
+                <Popup>Hovered position</Popup>
+              </CircleMarker>
+            )}
           </MapContainer>
         </StyledContainer>
       )}
