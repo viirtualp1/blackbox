@@ -8,7 +8,7 @@
 
 EdgeTX Blackbox Visualization is a tool for visualizing blackbox logs from EdgeTX firmware. It is designed to help users analyze flight data and improve their flying experience.
 
-![preview](./public/preview.png)
+![preview](./public/preview.webp)
 
 Main features:
 

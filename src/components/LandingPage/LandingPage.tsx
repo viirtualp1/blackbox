@@ -38,7 +38,7 @@ function LandingPage({ onUploadFile, onInitExampleFile }: LandingPageProps) {
   return (
     <Box sx={styles.initialContainer}>
       <Box sx={styles.imageColumn}>
-        <Link href="/preview.png" target="_blank" rel="noopener">
+        <Link href="/preview.webp" target="_blank" rel="noopener">
           <Box
             component="img"
             alt="EdgeTX Blackbox Visualization Screenshot"
