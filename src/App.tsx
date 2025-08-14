@@ -9,7 +9,6 @@ import type { Log } from './parse/types'
 import AppThemeSelect from '@/components/AppThemeSelect/AppThemeSelect.tsx'
 import LandingPage from '@/components/LandingPage/LandingPage.tsx'
 import MainPage from '@/components/MainPage/MainPage.tsx'
-import SEO from '@/components/SEO'
 
 function App() {
   const [data, saveData] = useLocalStorage<string | null>('RawData2', null)
@@ -87,7 +86,6 @@ function App() {
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
-      <SEO />
       <AppThemeSelect />
 
       {!log && (
