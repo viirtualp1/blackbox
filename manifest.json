@@ -1,9 +1,9 @@
 {
-  "name": "Blackbox",
+  "name": "EdgeTX Blackbox Visualization - RC Flight Data Analysis Tool",
   "start_url": "/",
   "display": "standalone",
   "registerType": "autoUpdate",
-  "includeAssets": ["icon.svg"],
+  "includeAssets": ["icon.png"],
   "icons": [
     {
       "src": "/icon-144x144.png",

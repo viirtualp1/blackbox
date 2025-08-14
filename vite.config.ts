@@ -19,11 +19,11 @@ export default defineConfig({
       injectRegister: 'auto',
       registerType: 'autoUpdate',
       manifest: {
-        name: 'Blackbox',
+        name: 'EdgeTX Blackbox Visualization - RC Flight Data Analysis Tool',
         start_url: '/',
         icons: [
           {
-            src: '/icon.svg',
+            src: '/icon.png',
             sizes: '192x192',
             type: 'image/svg',
           },
