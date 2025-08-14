@@ -1,4 +1,4 @@
-![logo](./readme_images/7f4fda38-c865-4034-81bc-71438be219db.png)
+![logo](./public/logo-preview.png)
 
 # EdgeTX Blackbox Visualization
 

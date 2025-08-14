@@ -1,2 +1,8 @@
 User-agent: *
 Allow: /
+
+# Sitemap
+Sitemap: https://edgetx-bb.zininalx.com/sitemap.xml
+
+# Crawl-delay for respectful crawling
+Crawl-delay: 1
