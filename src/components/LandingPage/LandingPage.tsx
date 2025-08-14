@@ -42,7 +42,7 @@ function LandingPage({ onUploadFile, onInitExampleFile }: LandingPageProps) {
           <Box
             component="img"
             alt="EdgeTX Blackbox Visualization Screenshot"
-            src="/preview.png"
+            src="/preview.webp"
             sx={{
               maxWidth: '100%',
               height: 'auto',
