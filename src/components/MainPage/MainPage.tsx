@@ -10,6 +10,7 @@ import type { Log, LogRecord, LogStatistics } from '@/parse/types'
 import Map from '@/components/Map/Map.tsx'
 import LogChart from '@/components/LogChart/LogChart.tsx'
 import Stats from '@/components/Stats/Stats.tsx'
+import MainPageSEO from '@/components/SEO/MainPageSEO'
 
 interface MainPageProps {
   log: Log
@@ -107,32 +108,35 @@ function MainPage({ log, rawLog, onClearData }: MainPageProps) {
   }
 
   return (
-    <Box sx={{ margin: '24px' }}>
-      <Grid container spacing={1} alignItems="center" sx={{ mb: 2 }}>
-        <Typography fontSize={24}>{log.title || 'Unknown Log'}</Typography>
-        <IconButton
-          aria-label="clear"
-          color="error"
-          size="small"
-          onClick={onClearData}
-        >
-          <HighlightOff />
-        </IconButton>
-      </Grid>
-      <Grid width="100%" spacing={5}>
-        <Grid container sx={{ mt: 1 }} spacing={2}>
-          <Grid size={{ sm: 12, lg: 9 }}>
-            <Map segmentDataCallback={lchCb} hoveredPoint={hoveredPoint} />
+    <>
+      <MainPageSEO />
+      <Box sx={{ margin: '24px' }}>
+        <Grid container spacing={1} alignItems="center" sx={{ mb: 2 }}>
+          <Typography fontSize={24}>{log.title || 'Unknown Log'}</Typography>
+          <IconButton
+            aria-label="clear"
+            color="error"
+            size="small"
+            onClick={onClearData}
+          >
+            <HighlightOff />
+          </IconButton>
+        </Grid>
+        <Grid width="100%" spacing={5}>
+          <Grid container sx={{ mt: 1 }} spacing={2}>
+            <Grid size={{ sm: 12, lg: 9 }}>
+              <Map segmentDataCallback={lchCb} hoveredPoint={hoveredPoint} />
+            </Grid>
+            <Grid size={{ sm: 12, lg: 3 }}>
+              <Stats stat={selectedRangeStatistic || globalLogStatistic} />
+            </Grid>
           </Grid>
-          <Grid size={{ sm: 12, lg: 3 }}>
-            <Stats stat={selectedRangeStatistic || globalLogStatistic} />
+          <Grid sx={{ mt: 3 }}>
+            <LogChart onSelect={onRangeSelect} onPointHover={setHoveredPoint} />
           </Grid>
         </Grid>
-        <Grid sx={{ mt: 3 }}>
-          <LogChart onSelect={onRangeSelect} onPointHover={setHoveredPoint} />
-        </Grid>
-      </Grid>
-    </Box>
+      </Box>
+    </>
   )
 }
 
