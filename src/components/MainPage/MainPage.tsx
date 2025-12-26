@@ -10,6 +10,7 @@ import type { Log, LogRecord, LogStatistics } from '@/parse/types'
 import Map from '@/components/Map/Map.tsx'
 import LogChart from '@/components/LogChart/LogChart.tsx'
 import Stats from '@/components/Stats/Stats.tsx'
+import { Share } from '@mui/icons-material'
 
 const PageContainer = styled(Box)({
   position: 'fixed',
@@ -32,9 +33,10 @@ const Header = styled(Box)(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
   gap: 8,
-  backgroundColor: theme.palette.mode === 'dark' 
-    ? 'rgba(0, 0, 0, 0.7)' 
-    : 'rgba(255, 255, 255, 0.9)',
+  backgroundColor:
+    theme.palette.mode === 'dark'
+      ? 'rgba(0, 0, 0, 0.7)'
+      : 'rgba(255, 255, 255, 0.9)',
   backdropFilter: 'blur(8px)',
   padding: '8px 16px',
   borderRadius: 8,
@@ -48,9 +50,10 @@ const StatsPanel = styled(Box)(({ theme }) => ({
   bottom: 220,
   width: 320,
   zIndex: 10,
-  backgroundColor: theme.palette.mode === 'dark' 
-    ? 'rgba(0, 0, 0, 0.7)' 
-    : 'rgba(255, 255, 255, 0.9)',
+  backgroundColor:
+    theme.palette.mode === 'dark'
+      ? 'rgba(0, 0, 0, 0.7)'
+      : 'rgba(255, 255, 255, 0.9)',
   backdropFilter: 'blur(8px)',
   borderRadius: 12,
   boxShadow: theme.shadows[8],
@@ -65,9 +68,10 @@ const ChartPanel = styled(Box)(({ theme }) => ({
   right: 0,
   height: 200,
   zIndex: 10,
-  backgroundColor: theme.palette.mode === 'dark' 
-    ? 'rgba(0, 0, 0, 0.8)' 
-    : 'rgba(255, 255, 255, 0.95)',
+  backgroundColor:
+    theme.palette.mode === 'dark'
+      ? 'rgba(0, 0, 0, 0.8)'
+      : 'rgba(255, 255, 255, 0.95)',
   backdropFilter: 'blur(8px)',
   borderTopLeftRadius: 16,
   borderTopRightRadius: 16,
@@ -79,9 +83,10 @@ interface MainPageProps {
   log: Log
   rawLog: Log
   onClearData: () => void
+  onShare: () => void
 }
 
-function MainPage({ log, rawLog, onClearData }: MainPageProps) {
+function MainPage({ log, rawLog, onClearData, onShare }: MainPageProps) {
   const [selectedRange, setSelectedRange] = useState<[number, number] | null>(
     null,
   )
@@ -173,13 +178,25 @@ function MainPage({ log, rawLog, onClearData }: MainPageProps) {
   return (
     <PageContainer>
       <MapBackground>
-        <Map segmentDataCallback={lchCb} hoveredPoint={hoveredPoint} fullscreen />
+        <Map
+          segmentDataCallback={lchCb}
+          hoveredPoint={hoveredPoint}
+          fullscreen
+        />
       </MapBackground>
 
       <Header>
         <Typography fontSize={20} fontWeight={500}>
           {log.title || 'Unknown Log'}
         </Typography>
+        <IconButton
+          aria-label="share"
+          color="primary"
+          size="small"
+          onClick={onShare}
+        >
+          <Share />
+        </IconButton>
         <IconButton
           aria-label="clear"
           color="error"

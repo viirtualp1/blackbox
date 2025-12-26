@@ -53,11 +53,13 @@ const StyledSettingsContainer = styled(Box)({
   boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
 })
 
-const StyledContainer = styled(Box)<{ fullscreen?: boolean }>(({ fullscreen }) => ({
-  position: 'relative',
-  width: fullscreen ? '100%' : undefined,
-  height: fullscreen ? '100%' : undefined,
-}))
+const StyledContainer = styled(Box)<{ fullscreen?: boolean }>(
+  ({ fullscreen }) => ({
+    position: 'relative',
+    width: fullscreen ? '100%' : undefined,
+    height: fullscreen ? '100%' : undefined,
+  }),
+)
 
 const Map: FC<Props> = ({ segmentDataCallback, hoveredPoint, fullscreen }) => {
   const { log } = useLogStore()
@@ -183,7 +185,12 @@ const Map: FC<Props> = ({ segmentDataCallback, hoveredPoint, fullscreen }) => {
             </Menu>
           </StyledSettingsContainer>
 
-          <MapContainer center={centerPosition} zoom={16} style={getMapStyles(fullscreen)} zoomControl={false}>
+          <MapContainer
+            center={centerPosition}
+            zoom={16}
+            style={getMapStyles(fullscreen)}
+            zoomControl={false}
+          >
             <ZoomControl position="topright" />
             <TileLayer
               key={selectedProvider.name}

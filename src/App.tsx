@@ -9,6 +9,7 @@ import type { Log } from './parse/types'
 import AppThemeSelect from '@/components/AppThemeSelect/AppThemeSelect.tsx'
 import LandingPage from '@/components/LandingPage/LandingPage.tsx'
 import MainPage from '@/components/MainPage/MainPage.tsx'
+import { compressHashData, decompressHashData } from './hash/index.ts'
 
 function App() {
   const [data, saveData] = useLocalStorage<string | null>('RawData2', null)
@@ -21,6 +22,30 @@ function App() {
       dark: true,
     },
   })
+
+  useEffect(() => {
+    const hashData = window.location.hash.substring(1)
+    if (!hashData) {
+      return
+    }
+
+    const init = async () => {
+      console.log('restore data from the hash', hashData.length, 'characters')
+      console.log('decompressing...')
+
+      const decompressedHashData = await decompressHashData(hashData)
+      saveData(decompressedHashData.logRaw)
+    }
+
+    init().catch((error) => {
+      console.error('Error decompressing hash data:', error)
+      alert('Error decompressing hash data: ' + error.message)
+    })
+
+    return () => {
+      // abort the init
+    }
+  }, [])
 
   useEffect(() => {
     if (!data) {
@@ -83,6 +108,18 @@ function App() {
     saveData(null)
   }
 
+  const onShare = async () => {
+    if (!data) return
+
+    const compressed = await compressHashData({ logRaw: data })
+    const url = `${window.location.origin}${window.location.pathname}#${compressed}`
+
+    await navigator.clipboard.writeText(url)
+    alert(
+      'Link copied to clipboard! It might be quite long, however, it will work anyway.',
+    )
+  }
+
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
@@ -96,7 +133,12 @@ function App() {
       )}
 
       {log && rawLog && (
-        <MainPage log={log} rawLog={rawLog} onClearData={clearData} />
+        <MainPage
+          log={log}
+          rawLog={rawLog}
+          onClearData={clearData}
+          onShare={onShare}
+        />
       )}
     </ThemeProvider>
   )
