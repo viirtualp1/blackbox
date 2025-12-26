@@ -5,6 +5,7 @@ import {
   Popup,
   TileLayer,
   CircleMarker,
+  ZoomControl,
 } from 'react-leaflet'
 import {
   IconButton,
@@ -32,19 +33,19 @@ import MapLogPathRenderer, {
 interface Props {
   segmentDataCallback: GetSegmentConfig
   hoveredPoint?: { second: number } | null
+  fullscreen?: boolean
 }
 
-const styles: Record<string, CSSProperties> = {
-  map: {
-    width: '100%',
-    minHeight: '500px',
-    borderRadius: '4px',
-  },
-}
+const getMapStyles = (fullscreen?: boolean): CSSProperties => ({
+  width: '100%',
+  height: fullscreen ? '100%' : undefined,
+  minHeight: fullscreen ? '100%' : '500px',
+  borderRadius: fullscreen ? 0 : '4px',
+})
 
 const StyledSettingsContainer = styled(Box)({
   position: 'absolute',
-  top: 10,
+  top: 80,
   right: 10,
   zIndex: 1000,
   backgroundColor: 'white',
@@ -52,11 +53,13 @@ const StyledSettingsContainer = styled(Box)({
   boxShadow: '0 2px 5px rgba(0,0,0,0.2)',
 })
 
-const StyledContainer = styled(Box)({
+const StyledContainer = styled(Box)<{ fullscreen?: boolean }>(({ fullscreen }) => ({
   position: 'relative',
-})
+  width: fullscreen ? '100%' : undefined,
+  height: fullscreen ? '100%' : undefined,
+}))
 
-const Map: FC<Props> = ({ segmentDataCallback, hoveredPoint }) => {
+const Map: FC<Props> = ({ segmentDataCallback, hoveredPoint, fullscreen }) => {
   const { log } = useLogStore()
   const [selectedProvider, setSelectedProvider] = useState<MapProvider>(
     mapProviders[0],
@@ -119,7 +122,7 @@ const Map: FC<Props> = ({ segmentDataCallback, hoveredPoint }) => {
   return (
     <>
       {centerPosition && (
-        <StyledContainer>
+        <StyledContainer fullscreen={fullscreen}>
           <StyledSettingsContainer>
             <IconButton
               onClick={handleSettingsClick}
@@ -180,7 +183,8 @@ const Map: FC<Props> = ({ segmentDataCallback, hoveredPoint }) => {
             </Menu>
           </StyledSettingsContainer>
 
-          <MapContainer center={centerPosition} zoom={16} style={styles.map}>
+          <MapContainer center={centerPosition} zoom={16} style={getMapStyles(fullscreen)} zoomControl={false}>
+            <ZoomControl position="topright" />
             <TileLayer
               key={selectedProvider.name}
               attribution={selectedProvider.attribution}

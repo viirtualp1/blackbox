@@ -194,7 +194,7 @@ const LogChart: FC<Props> = ({ onSelect, onPointHover }) => {
       <Line
         ref={lineRef}
         updateMode="resize"
-        style={{ maxHeight: '300px' }}
+        style={{ maxHeight: '170px', height: '100%' }}
         options={{
           animation: false,
           responsive: true,
