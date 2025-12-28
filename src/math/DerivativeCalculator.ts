@@ -1,3 +1,5 @@
+import { min, max, mean } from 'simple-statistics'
+
 export interface DerivativeData {
   derivative: number // Current derivative value
   averageDerivative: number // Average derivative over all samples
@@ -9,7 +11,6 @@ export interface DerivativeData {
 export class DerivativeCalculator {
   private prevValue: number | null = null
   private derivatives: number[] = []
-  private totalDerivative: number = 0
 
   addValue(value: number, timeDelta: number): void {
     if (typeof value !== 'number' || isNaN(value)) {
@@ -25,11 +26,8 @@ export class DerivativeCalculator {
     }
 
     if (this.prevValue !== null) {
-      const deltaValue = value - this.prevValue
-
-      const derivative = deltaValue / timeDelta
+      const derivative = (value - this.prevValue) / timeDelta
       this.derivatives.push(derivative)
-      this.totalDerivative += derivative
     }
 
     this.prevValue = value
@@ -42,40 +40,28 @@ export class DerivativeCalculator {
     return this.derivatives[this.derivatives.length - 1]
   }
 
-  getAverageDerivative(): number {
-    if (this.derivatives.length === 0) {
-      return 0
-    }
-    return this.totalDerivative / this.derivatives.length
-  }
-
-  getMaxDerivative(): number {
-    if (this.derivatives.length === 0) {
-      return 0
-    }
-    return Math.max(...this.derivatives)
-  }
-
-  getMinDerivative(): number {
-    if (this.derivatives.length === 0) {
-      return 0
-    }
-    return Math.min(...this.derivatives)
-  }
-
   getDerivativeData(): DerivativeData {
+    if (this.derivatives.length === 0) {
+      return {
+        derivatives: [],
+        derivative: 0,
+        averageDerivative: 0,
+        maxDerivative: 0,
+        minDerivative: 0,
+      }
+    }
+
     return {
       derivatives: this.derivatives,
       derivative: this.getCurrentDerivative(),
-      averageDerivative: this.getAverageDerivative(),
-      maxDerivative: this.getMaxDerivative(),
-      minDerivative: this.getMinDerivative(),
+      averageDerivative: mean(this.derivatives),
+      maxDerivative: max(this.derivatives),
+      minDerivative: min(this.derivatives),
     }
   }
 
   reset(): void {
     this.prevValue = null
     this.derivatives = []
-    this.totalDerivative = 0
   }
 }
