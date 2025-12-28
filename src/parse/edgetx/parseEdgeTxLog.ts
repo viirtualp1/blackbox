@@ -1,6 +1,7 @@
 import { safeParseNumber } from '@/utils'
 import { parseCsv } from '../parceCsv'
 import type { Log, LogRecord, EdgeTXLogRecord } from '../types'
+import type { LocationData } from '@/types/data'
 
 export function applyHdgNameFix(record: EdgeTXLogRecord): EdgeTXLogRecord {
   if ('Hdg(@)' in record) {
@@ -10,6 +11,27 @@ export function applyHdgNameFix(record: EdgeTXLogRecord): EdgeTXLogRecord {
   }
 
   return record
+}
+
+export function parseEdgeTxCoordinates(
+  field: string,
+  altitude: number,
+): null | LocationData {
+  if (!field.trim()) {
+    return null
+  }
+
+  const [lat, lng] = field
+    .split(' ')
+    .map((value, idx) =>
+      safeParseNumber(value, { fieldName: `GPS ${idx === 0 ? 'lat' : 'lng'}` }),
+    )
+
+  return {
+    lat,
+    lng,
+    alt: altitude,
+  }
 }
 
 export async function parseEdgeTxLogs(text: string): Promise<Log> {
@@ -22,6 +44,20 @@ export async function parseEdgeTxLogs(text: string): Promise<Log> {
 
   let startDate: Date | null = null
   let endDate: Date | null = null
+
+  const previousCoordinates = data
+    .map((record) => {
+      const altitude = safeParseNumber(record['Alt(m)'], {
+        fieldName: 'Alt(m)',
+        defaultValue: 0,
+      })
+
+      return parseEdgeTxCoordinates(record.GPS, altitude)
+    })
+    .find((coordinates) => coordinates !== null)
+  if (!previousCoordinates) {
+    throw new Error('No valid coordinates found in the log.')
+  }
 
   const records = data.map((record): LogRecord => {
     const parsedDate = new Date(`${record.Date}T${record.Time}Z`)
@@ -36,24 +72,20 @@ export async function parseEdgeTxLogs(text: string): Promise<Log> {
     if (!endDate || parsedDate > endDate) {
       endDate = parsedDate
     }
+    const altitudeM = safeParseNumber(record['Alt(m)'], {
+      fieldName: 'Alt(m)',
+      defaultValue: 0,
+    })
 
-    const [lat, lng] = record.GPS.split(' ').map((value, idx) =>
-      safeParseNumber(value, { fieldName: `GPS ${idx === 0 ? 'lat' : 'lng'}` }),
-    )
-    const coordinates = {
-      lat,
-      lng,
-      alt: safeParseNumber(record['Alt(m)'], { fieldName: 'Alt(m)' }),
-    }
+    // TODO move coordinates normalization logic to the resampler
+    const coordinates =
+      parseEdgeTxCoordinates(record.GPS, altitudeM) || previousCoordinates
 
     const antennaIndex = Number(record['ANT']) || 0
     const data: LogRecord = {
       flightTimeSec: (parsedDate.getTime() - startDate.getTime()) / 1000,
       coordinates,
-      altitudeM: safeParseNumber(record['Alt(m)'], {
-        fieldName: 'Alt(m)',
-        defaultValue: 0,
-      }),
+      altitudeM,
       date: parsedDate,
       groundSpeedKmh: safeParseNumber(record['GSpd(kmh)'], {
         fieldName: 'GSpd(kmh)',

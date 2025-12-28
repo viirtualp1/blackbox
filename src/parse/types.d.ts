@@ -1,4 +1,5 @@
 import { ValueStat } from '@/math/ValueStatCalculator'
+import type { LocationData } from '@/types/data'
 
 export interface EdgeTXLogRecord {
   Date: string // YYYY-MM-DD
