@@ -192,8 +192,11 @@ function MainPage({ log, rawLog, onClearData, onShare }: MainPageProps) {
         globalLogStatistic[opts.selectedField as keyof LogStatistics]
       if (isValueStat(globalLogStatisticField)) {
         const max = globalLogStatisticField.max
+        const min = globalLogStatisticField.min
+        const size = max - min
+        const perc = (avgSegment - min) / size
 
-        color = interpolateHsl('green', 'red')(avgSegment / max)
+        color = interpolateHsl('green', 'red')(perc)
       }
 
       return {

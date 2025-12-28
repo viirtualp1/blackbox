@@ -128,6 +128,7 @@ export interface LogStatistics {
   transmitterPowerMw: ValueStat
   transmitterLinkQuality: ValueStat
   amperageCurrentA: ValueStat
+  recieverLinkQuality: ValueStat
 
   totalDistanceM: number
   totalDistanceFlatM: number

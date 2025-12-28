@@ -27,6 +27,7 @@ export function calculateStatistic(
   const fullCapacityMah = new ValueStatCalculator()
   const verticalSpeedMpsCalculator = new ValueStatCalculator()
   const amperageCurrentA = new ValueStatCalculator()
+  const recieverLinkQualityCalculator = new ValueStatCalculator()
   let startCapacityMah: number | null = null
   let startSec: number | null = null
   let endSec: number | null = null
@@ -81,6 +82,11 @@ export function calculateStatistic(
     verticalSpeedMpsCalculator.addValueWeighted(record.verticalSpeedMps, weight)
     distanceCalculatorFlat.addPoint(record.coordinates, 0)
     amperageCurrentA.addValueWeighted(record.amperageCurrentA, weight)
+
+    recieverLinkQualityCalculator.addValueWeighted(
+      record.recieverLinkQuality,
+      weight,
+    )
   }
 
   const alt = altitudeCalculator.getValue()
@@ -114,5 +120,6 @@ export function calculateStatistic(
           ) *
           (180 / Math.PI)
         : 0,
+    recieverLinkQuality: recieverLinkQualityCalculator.getValue(),
   }
 }
