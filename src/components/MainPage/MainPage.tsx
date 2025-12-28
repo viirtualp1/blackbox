@@ -1,17 +1,14 @@
 import { useCallback, useMemo, useState } from 'react'
-import { interpolateHsl } from 'd3-interpolate'
 import { Box, Typography, IconButton, styled } from '@mui/material'
 import HighlightOff from '@mui/icons-material/HighlightOff'
-import type { Segment } from '@/types/data'
-import type { GetSegmentConfigOptions } from '@/components/MapPolylines/MapLogPathRenderer'
 import type { DraggableSelectEvent } from '@/types/draggable-chart.ts'
 import { calculateStatistic } from '@/math/calculateStatistic'
-import type { Log, LogRecord, LogStatistics } from '@/parse/types'
+import type { Log, LogStatistics } from '@/parse/types'
 import Map from '@/components/Map/Map.tsx'
 import LogChart from '@/components/LogChart/LogChart.tsx'
 import Stats from '@/components/Stats/Stats.tsx'
 import { Share } from '@mui/icons-material'
-import { isValueStat } from '@/math/ValueStatCalculator'
+import { createSegmentConfigCallback } from './getSegmentConfig'
 
 const PageContainer = styled(Box)({
   position: 'fixed',
@@ -159,52 +156,12 @@ function MainPage({ log, rawLog, onClearData, onShare }: MainPageProps) {
     [hoveredPoint, setHoveredPoint],
   )
 
-  const lchCb = useCallback(
-    (opts: GetSegmentConfigOptions): Segment['config'] => {
-      if (selectedRange) {
-        const [start, end] = selectedRange
-        const isStartWithinRange = opts.fromSec >= start && opts.toSec <= end
-        const isEndWithinRange = opts.fromSec <= end && opts.toSec >= start
-
-        if (!isStartWithinRange && !isEndWithinRange) {
-          return {
-            opacity: 0.5,
-            color: 'gray',
-            weight: 1,
-          }
-        }
-      }
-      if (!globalLogStatistic) {
-        return {
-          opacity: 0.8,
-          color: 'gray',
-          weight: 1,
-        }
-      }
-
-      const avgSegment =
-        opts.usedRecords.reduce((acc: number, record: LogRecord) => {
-          return record[opts.selectedField] + acc
-        }, 0) / opts.usedRecords.length
-
-      let color = '#00f'
-      const globalLogStatisticField =
-        globalLogStatistic[opts.selectedField as keyof LogStatistics]
-      if (isValueStat(globalLogStatisticField)) {
-        const max = globalLogStatisticField.max
-        const min = globalLogStatisticField.min
-        const size = max - min
-        const perc = (avgSegment - min) / size
-
-        color = interpolateHsl('green', 'red')(perc)
-      }
-
-      return {
-        opacity: 1,
-        color,
-        weight: 5,
-      }
-    },
+  const segmentConfigCallback = useMemo(
+    () =>
+      createSegmentConfigCallback({
+        selectedRange,
+        globalLogStatistic,
+      }),
     [globalLogStatistic, selectedRange],
   )
 
@@ -216,7 +173,7 @@ function MainPage({ log, rawLog, onClearData, onShare }: MainPageProps) {
     <PageContainer>
       <MapBackground>
         <Map
-          segmentDataCallback={lchCb}
+          segmentDataCallback={segmentConfigCallback}
           hoveredPoint={hoveredPoint}
           fullscreen
         />
