@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 import { FiltersType, type FilterLogItem } from '@/types/filters.ts'
-import type { RadiomasterLogRecord } from '@/parse/types'
+import type { EdgeTXLogRecord } from '@/parse/types'
 
 export type FiltersData = Record<FiltersType, FilterLogItem<any>>
 
@@ -13,7 +13,7 @@ interface FiltersState {
 }
 
 export const getPureFilter = (
-  key: keyof RadiomasterLogRecord,
+  key: keyof EdgeTXLogRecord,
 ): FilterLogItem<any> => ({
   date: '',
   time: '',

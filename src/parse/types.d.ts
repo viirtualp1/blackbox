@@ -1,6 +1,6 @@
 import { ValueStat } from '@/math/ValueStatCalculator'
 
-export interface RadiomasterLogRecord {
+export interface EdgeTXLogRecord {
   Date: string // YYYY-MM-DD
   Time: string // HH:mm:ss.SSS
   '1RSS(dB)': number

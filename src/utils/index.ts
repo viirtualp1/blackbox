@@ -1,14 +1,26 @@
 import { LatLng } from 'leaflet'
 import type { LocationData } from '@/types/data'
 
-export function safeParseNumber(value: string | number): number {
+export interface SafeParseNumberOptions {
+  defaultValue?: number
+  fieldName?: string
+}
+
+export function safeParseNumber(
+  value: string | number,
+  { defaultValue, fieldName }: SafeParseNumberOptions = {},
+): number {
   if (typeof value === 'string' && value.trim() === '') {
-    throw new Error('Cannot parse an empty string as a number')
+    if (defaultValue !== undefined) return defaultValue
+    throw new Error(
+      `Cannot parse an empty string as a number for field: ${fieldName}`,
+    )
   }
 
   const parsed = typeof value === 'number' ? value : parseFloat(value)
   if (isNaN(parsed)) {
-    throw new Error(`Invalid number: ${value}`)
+    if (defaultValue !== undefined) return defaultValue
+    throw new Error(`Invalid number: ${value} for field: ${fieldName}`)
   }
 
   return parsed
