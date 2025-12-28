@@ -12,6 +12,8 @@ import type { StatSection } from './types'
 
 interface Props {
   section: StatSection
+  expanded: boolean
+  onChange: (expanded: boolean) => void
 }
 
 const Accordion = styled((props: AccordionProps) => (
@@ -26,11 +28,14 @@ const Accordion = styled((props: AccordionProps) => (
   },
 }))
 
-const StatAccordion: FC<Props> = ({ section }) => {
+const StatAccordion: FC<Props> = ({ section, expanded, onChange }) => {
   const { title, icon: Icon, data, type } = section
 
   return (
-    <Accordion>
+    <Accordion
+      expanded={expanded}
+      onChange={(_, isExpanded) => onChange(isExpanded)}
+    >
       <AccordionSummary expandIcon={<ExpandMoreIcon />}>
         <Icon sx={{ mr: 1 }} />
         <Typography>{title}</Typography>

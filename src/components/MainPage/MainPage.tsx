@@ -44,12 +44,14 @@ const Header = styled(Box)(({ theme }) => ({
   boxShadow: theme.shadows[4],
 }))
 
-const StatsPanel = styled(Box)(({ theme }) => ({
+const StatsPanel = styled(Box, {
+  shouldForwardProp: (prop) => prop !== 'expanded',
+})<{ expanded?: boolean }>(({ theme, expanded }) => ({
   position: 'absolute',
   top: 80,
   left: 16,
   bottom: 220,
-  width: 320,
+  width: expanded ? 400 : 270,
   zIndex: 10,
   backgroundColor:
     theme.palette.mode === 'dark'
@@ -60,6 +62,7 @@ const StatsPanel = styled(Box)(({ theme }) => ({
   boxShadow: theme.shadows[8],
   overflowY: 'auto',
   padding: 16,
+  transition: 'width 0.3s ease',
 }))
 
 const ChartPanel = styled(Box)(({ theme }) => ({
@@ -94,6 +97,7 @@ function MainPage({ log, rawLog, onClearData, onShare }: MainPageProps) {
   const [hoveredPoint, setHoveredPoint] = useState<{ second: number } | null>(
     null,
   )
+  const [statsExpanded, setStatsExpanded] = useState(false)
 
   const globalLogStatistic = useMemo<LogStatistics | null>(() => {
     if (!rawLog) {
@@ -237,8 +241,11 @@ function MainPage({ log, rawLog, onClearData, onShare }: MainPageProps) {
         </IconButton>
       </Header>
 
-      <StatsPanel>
-        <Stats stat={selectedRangeStatistic || globalLogStatistic} />
+      <StatsPanel expanded={statsExpanded}>
+        <Stats
+          stat={selectedRangeStatistic || globalLogStatistic}
+          onExpandedChange={setStatsExpanded}
+        />
       </StatsPanel>
 
       <ChartPanel>
