@@ -20,6 +20,10 @@ const calculateSegmentValue = (
     default:
       return (
         records.reduce((acc: number, record: LogRecord) => {
+          if (typeof record[field] !== 'number') {
+            return acc
+          }
+
           return record[field] + acc
         }, 0) / records.length
       )
