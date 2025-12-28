@@ -88,8 +88,10 @@ export function calculateStatistic(
     (alt.lastValue - alt.firstValue) /
     (distanceCalculatorFlat.getDistance().totalDistanceM / 1000)
 
+  const durationSec =
+    endSec !== null && startSec !== null ? endSec - startSec : 0
   return {
-    altitude: altitudeCalculator.getValue(),
+    altitudeM: altitudeCalculator.getValue(),
     verticalSpeedMps: verticalSpeedMpsCalculator.getValue(),
     groundSpeedKmh: speedCalculator.getValue(),
     transmitterPowerMw: transmitterPowerCalculator.getValue(),
@@ -101,8 +103,8 @@ export function calculateStatistic(
     mahPerKm:
       fullCapacityMah.getValue().max /
       (distanceCalculator.getDistance().totalDistanceM / 1000),
-    mahPerMinute: fullCapacityMah.getValue().max / (log.durationSec / 60 || 1), // avoid division by zero
-    durationSec: endSec !== null && startSec !== null ? endSec - startSec : 0,
+    mahPerMinute: fullCapacityMah.getValue().max / (durationSec / 60),
+    durationSec,
     altitudeChangePerKm,
     avgGlideSlopeDeg:
       distanceCalculatorFlat.getDistance().totalDistanceM > 0

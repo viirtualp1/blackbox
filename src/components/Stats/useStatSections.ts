@@ -33,9 +33,9 @@ export const useStatSections = (stat: LogStatistics): StatSection[] => {
       data: [
         {
           metric: 'Altitude (m)',
-          avg: stat.altitude.average.toFixed(1),
-          min: stat.altitude.min.toFixed(1),
-          max: stat.altitude.max.toFixed(1),
+          avg: stat.altitudeM.average.toFixed(1),
+          min: stat.altitudeM.min.toFixed(1),
+          max: stat.altitudeM.max.toFixed(1),
         },
         {
           metric: 'Vertical Speed (m/s)',

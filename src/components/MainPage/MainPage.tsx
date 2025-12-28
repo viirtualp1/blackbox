@@ -11,6 +11,7 @@ import Map from '@/components/Map/Map.tsx'
 import LogChart from '@/components/LogChart/LogChart.tsx'
 import Stats from '@/components/Stats/Stats.tsx'
 import { Share } from '@mui/icons-material'
+import { isValueStat } from '@/math/ValueStatCalculator'
 
 const PageContainer = styled(Box)({
   position: 'fixed',
@@ -101,7 +102,7 @@ function MainPage({ log, rawLog, onClearData, onShare }: MainPageProps) {
 
     const stats = calculateStatistic(rawLog)!
 
-    console.log('Altitude stats:', stats?.altitude)
+    console.log('Altitude stats:', stats?.altitudeM)
     console.log('Speed stats:', stats?.groundSpeedKmh)
 
     return stats
@@ -122,14 +123,37 @@ function MainPage({ log, rawLog, onClearData, onShare }: MainPageProps) {
     return stats
   }, [rawLog, selectedRange])
 
-  const onRangeSelect = ({ range }: DraggableSelectEvent) => {
-    if (range[0] === range[1]) {
-      setSelectedRange(null)
-      return
-    }
+  const onRangeSelect = useCallback(
+    ({ range }: DraggableSelectEvent) => {
+      if (range[0] === range[1]) {
+        setSelectedRange(null)
+        return
+      }
 
-    setSelectedRange(range)
-  }
+      setSelectedRange(range)
+    },
+    [setSelectedRange],
+  )
+
+  const onPointHover = useCallback(
+    (
+      point: {
+        index: number
+        datasetIndex: number
+        value: number
+        label: string | number
+        second: number
+      } | null,
+    ) => {
+      // prevent setting the same point twice
+      if (point?.second === hoveredPoint?.second) {
+        return
+      }
+
+      setHoveredPoint(point)
+    },
+    [hoveredPoint, setHoveredPoint],
+  )
 
   const lchCb = useCallback(
     (opts: GetSegmentConfigOptions): Segment['config'] => {
@@ -140,7 +164,7 @@ function MainPage({ log, rawLog, onClearData, onShare }: MainPageProps) {
 
         if (!isStartWithinRange && !isEndWithinRange) {
           return {
-            opacity: 0.8,
+            opacity: 0.5,
             color: 'gray',
             weight: 1,
           }
@@ -156,12 +180,18 @@ function MainPage({ log, rawLog, onClearData, onShare }: MainPageProps) {
 
       const avgSegment =
         opts.usedRecords.reduce((acc: number, record: LogRecord) => {
-          return record.altitudeM + acc
+          return record[opts.selectedField] + acc
         }, 0) / opts.usedRecords.length
-      const color = interpolateHsl(
-        'green',
-        'red',
-      )(avgSegment / globalLogStatistic.altitude.max)
+
+      let color = '#00f'
+      const globalLogStatisticField =
+        globalLogStatistic[opts.selectedField as keyof LogStatistics]
+      if (isValueStat(globalLogStatisticField)) {
+        const max = globalLogStatisticField.max
+
+        color = interpolateHsl('green', 'red')(avgSegment / max)
+      }
+
       return {
         opacity: 1,
         color,
@@ -212,7 +242,7 @@ function MainPage({ log, rawLog, onClearData, onShare }: MainPageProps) {
       </StatsPanel>
 
       <ChartPanel>
-        <LogChart onSelect={onRangeSelect} onPointHover={setHoveredPoint} />
+        <LogChart onSelect={onRangeSelect} onPointHover={onPointHover} />
       </ChartPanel>
     </PageContainer>
   )

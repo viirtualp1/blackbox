@@ -11,6 +11,21 @@ export interface ValueStat {
   lastValue: number
 }
 
+export function isValueStat(stat: unknown): stat is ValueStat {
+  return (
+    typeof stat === 'object' &&
+    stat !== null &&
+    'max' in stat &&
+    'min' in stat &&
+    'average' in stat &&
+    'q95' in stat &&
+    'q99' in stat &&
+    'uniqueValues' in stat &&
+    'firstValue' in stat &&
+    'lastValue' in stat
+  )
+}
+
 export class ValueStatCalculator {
   private totalWeight: number = 0
   private totalWeightedSum: number = 0

@@ -1,4 +1,4 @@
-import { type FC, useEffect, useState, type MouseEvent } from 'react'
+import { type FC, useEffect, useState, type MouseEvent, useMemo } from 'react'
 import {
   MapContainer,
   Marker,
@@ -15,8 +15,8 @@ import {
   Box,
   Divider,
   FormControlLabel,
-  Checkbox,
   styled,
+  Radio,
 } from '@mui/material'
 import SettingsIcon from '@mui/icons-material/Settings'
 import type { CSSProperties } from '@mui/material'
@@ -29,6 +29,7 @@ import { FinishIcon } from '@/components/icons/FinishIcon'
 import MapLogPathRenderer, {
   type GetSegmentConfig,
 } from '../MapPolylines/MapLogPathRenderer'
+import type { LogRecord } from '@/parse/types'
 
 interface Props {
   segmentDataCallback: GetSegmentConfig
@@ -66,6 +67,8 @@ const Map: FC<Props> = ({ segmentDataCallback, hoveredPoint, fullscreen }) => {
   const [selectedProvider, setSelectedProvider] = useState<MapProvider>(
     mapProviders[0],
   )
+  const [selectedField, setSelectedField] =
+    useState<keyof LogRecord>('altitudeM')
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null)
   const open = Boolean(anchorEl)
   const [hoveredPosition, setHoveredPosition] = useState<
@@ -88,6 +91,18 @@ const Map: FC<Props> = ({ segmentDataCallback, hoveredPoint, fullscreen }) => {
     initStartPosition()
     initFinishPosition()
   }, [log, initCenterPosition, initPath, initStartPosition, initFinishPosition])
+
+  const simpleLogFields = useMemo<(keyof LogRecord)[]>(
+    () => [
+      'altitudeM',
+      'groundSpeedKmh',
+      'verticalSpeedMps',
+      'amperageCurrentA',
+      'transmitterLinkQuality',
+      'recieverLinkQuality',
+    ],
+    [],
+  )
 
   // Update hovered position when hoveredPoint changes
   useEffect(() => {
@@ -119,6 +134,10 @@ const Map: FC<Props> = ({ segmentDataCallback, hoveredPoint, fullscreen }) => {
   const handleProviderSelect = (provider: MapProvider) => {
     setSelectedProvider(provider)
     handleClose()
+  }
+
+  const handleFieldChange = (field: keyof LogRecord) => {
+    setSelectedField(field)
   }
 
   return (
@@ -156,32 +175,22 @@ const Map: FC<Props> = ({ segmentDataCallback, hoveredPoint, fullscreen }) => {
                 </MenuItem>
               ))}
               <Divider />
-              <MenuItem>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={true}
-                      name="altitude"
-                      size="small"
-                      sx={{ padding: '6px' }}
-                    />
-                  }
-                  label="Altitude"
-                />
-              </MenuItem>
-              <MenuItem>
-                <FormControlLabel
-                  control={
-                    <Checkbox
-                      checked={true}
-                      name="battery"
-                      size="small"
-                      sx={{ padding: '6px' }}
-                    />
-                  }
-                  label="Battery"
-                />
-              </MenuItem>
+              {simpleLogFields.map((field) => (
+                <MenuItem key={field}>
+                  <FormControlLabel
+                    control={
+                      <Radio
+                        checked={selectedField === field}
+                        name={field}
+                        size="small"
+                        sx={{ padding: '6px' }}
+                        onChange={() => handleFieldChange(field)}
+                      />
+                    }
+                    label={field}
+                  />
+                </MenuItem>
+              ))}
             </Menu>
           </StyledSettingsContainer>
 
@@ -209,7 +218,10 @@ const Map: FC<Props> = ({ segmentDataCallback, hoveredPoint, fullscreen }) => {
               </Marker>
             )}
 
-            <MapLogPathRenderer getConfig={segmentDataCallback} />
+            <MapLogPathRenderer
+              getConfig={segmentDataCallback}
+              selectedField={selectedField}
+            />
 
             {hoveredPosition && (
               <CircleMarker

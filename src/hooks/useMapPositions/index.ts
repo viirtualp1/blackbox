@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import type { LocationData, Segment } from '@/types/data'
 import type { Log, LogRecord, LogStatistics } from '@/parse/types'
 
@@ -31,7 +31,7 @@ export function useMapPositions(log: Log | null): UseMapPositionsReturn {
   )
   const [path, setPath] = useState<LocationData[]>([])
 
-  const initCenterPosition = () => {
+  const initCenterPosition = useCallback(() => {
     if (!log || log.records.length === 0) return
 
     setCenterPosition({
@@ -39,9 +39,9 @@ export function useMapPositions(log: Log | null): UseMapPositionsReturn {
       lng: log.records[0].coordinates.lng,
       alt: log.records[0].coordinates.alt,
     })
-  }
+  }, [log])
 
-  const initPath = () => {
+  const initPath = useCallback(() => {
     if (!log || log.records.length === 0) return
 
     const newPath: LocationData[] = log.records.map(
@@ -51,20 +51,20 @@ export function useMapPositions(log: Log | null): UseMapPositionsReturn {
     )
 
     setPath(newPath)
-  }
+  }, [log])
 
-  const initStartPosition = () => {
+  const initStartPosition = useCallback(() => {
     if (!log) return
 
     setStartPosition(log.records[0].coordinates)
-  }
+  }, [log])
 
-  const initFinishPosition = () => {
+  const initFinishPosition = useCallback(() => {
     if (!log) return
 
     const gps = log.records[log.records.length - 1].coordinates
     setFinishPosition({ lat: gps.lat, lng: gps.lng, alt: gps.alt })
-  }
+  }, [log])
 
   return {
     /* States */

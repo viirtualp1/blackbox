@@ -122,7 +122,7 @@ export interface LogRecord {
 }
 
 export interface LogStatistics {
-  altitude: ValueStat
+  altitudeM: ValueStat
   verticalSpeedMps: ValueStat
   groundSpeedKmh: ValueStat
   transmitterPowerMw: ValueStat

@@ -12,6 +12,7 @@ export interface GetSegmentConfigOptions {
   usedRecords: LogRecord[]
   fromSec: number
   toSec: number
+  selectedField: keyof LogRecord
 }
 
 export type GetSegmentConfig = (
@@ -25,6 +26,7 @@ interface PathArrowSegment {
 
 interface Props {
   getConfig: GetSegmentConfig
+  selectedField: keyof LogRecord
 }
 
 // Constants
@@ -37,9 +39,9 @@ const DEFAULT_PATH_OPTIONS: PathOptions = {
   lineCap: 'round',
 }
 
-const MAX_SEGMENT_DISTANCE_M = 100
+const MAX_SEGMENT_DISTANCE_M = 50
 
-const MapLogPathRenderer: FC<Props> = ({ getConfig }) => {
+const MapLogPathRenderer: FC<Props> = ({ getConfig, selectedField }) => {
   const { log } = useLogStore()
 
   const segments = useMemo(() => {
@@ -58,6 +60,7 @@ const MapLogPathRenderer: FC<Props> = ({ getConfig }) => {
           usedRecords: used,
           fromSec: used[0].flightTimeSec,
           toSec: used[used.length - 1].flightTimeSec,
+          selectedField,
         }),
       })
       points = []
@@ -80,8 +83,6 @@ const MapLogPathRenderer: FC<Props> = ({ getConfig }) => {
 
       if (segmentDistance >= MAX_SEGMENT_DISTANCE_M) {
         flush(used)
-        // начинаем новую выборку с ТЕКУЩЕЙ записи,
-        // не трогаем i — счётчик продолжит движение вперёд
         points.push(rec.coordinates)
         used = [rec]
       }
@@ -89,7 +90,7 @@ const MapLogPathRenderer: FC<Props> = ({ getConfig }) => {
 
     flush(used)
     return res
-  }, [log, getConfig])
+  }, [log, getConfig, selectedField])
 
   const segmentsReversersed = useMemo(() => {
     return [...segments].reverse()
